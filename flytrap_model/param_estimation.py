@@ -134,7 +134,7 @@ def find_foh_coeff(count_begin, count_final, o_array):
 
     """
 
-    foh = (count_final - count_begin)/o_array.sum()
+    foh = (count_final - count_begin)/float(o_array.sum())
     return foh
 
 

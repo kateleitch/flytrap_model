@@ -4,14 +4,14 @@ import flytrap_model
 import matplotlib.pyplot as plt
 import json
 
-dirname = './data/2019_05_08_experiment_3'
-trap = 'C'
+# dirname = './data/2019_05_08_experiment_3'
+# trap = 'C'
 
-# dirname = './data/2017_10_26_experiment/'
-# trap = 'G'
-
-dirname = './data/2017_04_30_experiment/'
+dirname = './data/2017_10_26_experiment/'
 trap = 'G'
+
+# dirname = './data/2017_04_30_experiment/'
+# trap = 'G'
 
 def adjust_spines(ax_handle, spines):
     ax_handle.tick_params(direction='out')
