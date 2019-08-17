@@ -39,9 +39,9 @@ def find_fhv_fvh_coeff_using_fmin(foh, o_array, v_array, h_init=0.0, v_init=0.0,
       v_array    =  array of "in trap visible" counts giving number of flies in the trap
                     which are visible  each time step
 
-      h_init   =  (optional) initial count of flies in "on trap hidden" state                  <----------- ASK WILL; does he mean IN trap hidden?
+      h_init   =  (optional) initial count of flies in "in trap hidden" state
 
-      v_init   =  (optional) initial count of flies in "on trap visible" state                 <----------- ASK WILL; does he mean IN trap visible?
+      v_init   =  (optional) initial count of flies in "in trap visible" state
 
     Returns:
 
@@ -50,7 +50,7 @@ def find_fhv_fvh_coeff_using_fmin(foh, o_array, v_array, h_init=0.0, v_init=0.0,
                   step
 
       fvh      =  coefficient specifying the fraction of flies transistioning from
-                  "on trap visible" o[n] to "in trap hidden" h[n] during a given                  <----------- ASK WILL; I thought v[n] represented in-trap visible. probably typo but I want to check
+                  "in trap visible" v[n] to "in trap hidden" h[n] during a given
                   time step
     """
     v_array_filt = scipy.signal.medfilt(v_array,filt_window) # median filter seems analogous to moving average but i guess less sensitive to outliers
@@ -84,9 +84,9 @@ def find_fhv_fvh_coeff_using_lstsq(foh, o_array, v_array, h_init=0.0, v_init=0.0
       v_array    =  array of "in trap visible" counts giving number of flies in the trap
                     which are visible  each time step
 
-      h_init   =  (optional) initial count of flies in "on trap hidden" state
+      h_init   =  (optional) initial count of flies in "in trap hidden" state
 
-      v_init   =  (optional) initial count of flies in "on trap visible" state
+      v_init   =  (optional) initial count of flies in "in trap visible" state
 
     Returns:
 
@@ -95,7 +95,7 @@ def find_fhv_fvh_coeff_using_lstsq(foh, o_array, v_array, h_init=0.0, v_init=0.0
                   step
 
       fvh      =  coefficient specifying the fraction of flies transistioning from
-                  "on trap visible" o[n] to "in trap hidden" h[n] during a given
+                  "in trap visible" v[n] to "in trap hidden" h[n] during a given
                   time step
 
     """
@@ -192,15 +192,15 @@ def run_fly_trap_submodel(foh, fhv, fvh, o_array, h_init=0.0, v_init=0.0):
                   a given time step
 
       fvh      =  coefficient specifying the fraction of flies transistioning
-                  from "on trap visible" o[n] to "in trap hidden" h[n] during
+                  from "in trap visible" v[n] to "in trap hidden" h[n] during
                   a given time step
 
       o_array  =  array of "on trap" counts giving number of flies on the trap
                   at each time step
 
-      h_init   =  (optional) initial count of flies in "on trap hidden" state
+      h_init   =  (optional) initial count of flies in "in trap hidden" state
 
-      v_init   =  (optional) initial count of flies in "on trap visible" state
+      v_init   =  (optional) initial count of flies in "in trap visible" state
 
 
     Returns:
@@ -243,9 +243,9 @@ def create_fhv_fvh_cost_func(foh, o_array, v_array, h_init=0.0, v_init=0.0):
       v_array  =  array of "in trap visible" counts giving number of flies in the trap
                   which are visible  each time step
 
-      h_init   =  (optional) initial count of flies in "on trap hidden" state
+      h_init   =  (optional) initial count of flies in "in trap hidden" state
 
-      v_init   =  (optional) initial count of flies in "on trap visible" state
+      v_init   =  (optional) initial count of flies in "in trap visible" state
 
     Returns:
 
