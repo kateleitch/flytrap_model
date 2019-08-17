@@ -5,14 +5,14 @@ Provides functions for estimating the coefficients in the linear fly trap model
 
 o[n+1] = o[n] - foh*o[n] + a[n]
 h[n+1] = h[n] - fhv*h[n] + fvh*v[n] + foh*o[n]
-v[n+1] = v[n] + fhv*h[n] - fvh*v[n]
+v[n+1] = v[n] + fhv*h[n] - fvh*v[n] 
 
 where
 
-a[n] = # flies arriving on the trap at time step n
+a[n] = # flies arriving on the trap at time step n 
 o[n] = # flies on the trap at time step n
 h[n] = # flies in the trap, which are hidden, at time step n
-v[n] = # flies in the trap, which are visible, at time step n
+v[n] = # flies in the trap, which are visible, at time step n 
 
 foh = fraction of flies transitioning from o[n] to h[n] during a time step
 fhv = fraction of flies transitioning from h[n] to v[n] during a time step
@@ -21,68 +21,23 @@ fvh = fraction of flies transitioning from v[n] to h[n] during a time step
 
 """
 from __future__ import print_function
-import numpy
+import numpy 
 import scipy.signal
 import scipy.optimize
 
 
 def find_fhv_fvh_coeff_using_fmin(foh, o_array, v_array, h_init=0.0, v_init=0.0, filt_window=51):
     """
-    Find the fhv and fvh coefficients by solving nonlinear least squares problem
+    Find the fhv and fvh coefficients by solving nonlinear least squares problem 
 
     Arguments:
 
-      foh        =  coefficient specifying the fraction of flies transistioning from
-                   "on trap" o[n] to "in trap hidden" h[n] during a given time step
-      o_array    =  array of "on trap" counts giving number of flies on the trap at
+      foh        =  coefficient specifying the fraction of flies transistioning from 
+                   "on trap" o[n] to "in trap hidden" h[n] during a given time step 
+      o_array    =  array of "on trap" counts giving number of flies on the trap at 
 
-      v_array    =  array of "in trap visible" counts giving number of flies in the trap
-                    which are visible  each time step
-
-      h_init   =  (optional) initial count of flies in "on trap hidden" state                  <----------- ASK WILL; does he mean IN trap hidden?
-
-      v_init   =  (optional) initial count of flies in "on trap visible" state                 <----------- ASK WILL; does he mean IN trap visible?
-
-    Returns:
-
-      fhv      =  coefficient specifying the fraction of flies transistioning from
-                  "in trap hidden" h[n] to "in trap visible" v[n] during a given time
-                  step
-
-      fvh      =  coefficient specifying the fraction of flies transistioning from
-                  "on trap visible" o[n] to "in trap hidden" h[n] during a given                  <----------- ASK WILL; I thought v[n] represented in-trap visible. probably typo but I want to check
-                  time step
-    """
-    v_array_filt = scipy.signal.medfilt(v_array,filt_window) # median filter seems analogous to moving average but i guess less sensitive to outliers
-    o_array_filt = scipy.signal.medfilt(o_array,filt_window)
-    fhv_init, fvh_init = find_fhv_fvh_coeff_using_lstsq(foh, o_array_filt, v_array_filt,
-            h_init=h_init,
-            v_init=v_init
-            )
-    param_vec_init  = scipy.array([fhv_init,fvh_init])
-    cost_func = create_fhv_fvh_cost_func(foh, o_array, v_array,
-            h_init=h_init,
-            v_init=v_init
-            )
-    fhv, fvh = scipy.optimize.fmin(cost_func, param_vec_init, disp=0)
-    return fhv, fvh
-
-
-def find_fhv_fvh_coeff_using_lstsq(foh, o_array, v_array, h_init=0.0, v_init=0.0):
-    """
-    Find the fhv and fvh coefficients as overdetermined linear system using
-    lstsq. Note, This method tends return a biased solution when there is noise  <----------- ASK WILL; biased in what direction? does this bias end up not mattering after applying the general solver?
-    on the v_array. However, it is very useful for providing an initial guess
-    for a more general nonlinear solver.
-
-    Arguments:
-
-      foh        =  coefficient specifying the fraction of flies transistioning from
-                   "on trap" o[n] to "in trap hidden" h[n] during a given time step
-      o_array    =  array of "on trap" counts giving number of flies on the trap at
-
-      v_array    =  array of "in trap visible" counts giving number of flies in the trap
-                    which are visible  each time step
+      v_array    =  array of "in trap visible" counts giving number of flies in the trap 
+                    which are visible  each time step 
 
       h_init   =  (optional) initial count of flies in "on trap hidden" state
 
@@ -90,13 +45,58 @@ def find_fhv_fvh_coeff_using_lstsq(foh, o_array, v_array, h_init=0.0, v_init=0.0
 
     Returns:
 
-      fhv      =  coefficient specifying the fraction of flies transistioning from
-                  "in trap hidden" h[n] to "in trap visible" v[n] during a given time
-                  step
+      fhv      =  coefficient specifying the fraction of flies transistioning from 
+                  "in trap hidden" h[n] to "in trap visible" v[n] during a given time 
+                  step 
 
-      fvh      =  coefficient specifying the fraction of flies transistioning from
-                  "on trap visible" o[n] to "in trap hidden" h[n] during a given
-                  time step
+      fvh      =  coefficient specifying the fraction of flies transistioning from 
+                  "on trap visible" o[n] to "in trap hidden" h[n] during a given 
+                  time step 
+    """
+    v_array_filt = scipy.signal.medfilt(v_array,filt_window)
+    o_array_filt = scipy.signal.medfilt(o_array,filt_window)
+    fhv_init, fvh_init = find_fhv_fvh_coeff_using_lstsq(foh, o_array_filt, v_array_filt, 
+            h_init=h_init,
+            v_init=v_init
+            ) 
+    param_vec_init  = scipy.array([fhv_init,fvh_init])
+    cost_func = create_fhv_fvh_cost_func(foh, o_array, v_array, 
+            h_init=h_init, 
+            v_init=v_init
+            )
+    fhv, fvh = scipy.optimize.fmin(cost_func, param_vec_init, disp=0)
+    return fhv, fvh 
+
+
+def find_fhv_fvh_coeff_using_lstsq(foh, o_array, v_array, h_init=0.0, v_init=0.0):
+    """
+    Find the fhv and fvh coefficients as overdetermined linear system using
+    lstsq. Note, This method tends return a biased solution when there is noise
+    on the v_array. However, it is very useful for providing an initial guess
+    for a more general nonlinear solver.
+
+    Arguments:
+
+      foh        =  coefficient specifying the fraction of flies transistioning from 
+                   "on trap" o[n] to "in trap hidden" h[n] during a given time step 
+      o_array    =  array of "on trap" counts giving number of flies on the trap at 
+
+      v_array    =  array of "in trap visible" counts giving number of flies in the trap 
+                    which are visible  each time step 
+
+      h_init   =  (optional) initial count of flies in "on trap hidden" state
+
+      v_init   =  (optional) initial count of flies in "on trap visible" state
+
+    Returns:
+
+      fhv      =  coefficient specifying the fraction of flies transistioning from 
+                  "in trap hidden" h[n] to "in trap visible" v[n] during a given time 
+                  step 
+
+      fvh      =  coefficient specifying the fraction of flies transistioning from 
+                  "on trap visible" o[n] to "in trap hidden" h[n] during a given 
+                  time step 
 
     """
     n = o_array.shape[0]
@@ -109,28 +109,28 @@ def find_fhv_fvh_coeff_using_lstsq(foh, o_array, v_array, h_init=0.0, v_init=0.0
     prob_vector = h_array[1:] - foh*o_array[:-1] - h_array[:-1]
     result = numpy.linalg.lstsq(prob_matrix, prob_vector)
     fhv, fvh = result[0]
-    return fhv, fvh  #      <---- at this point my understanding of this is just "using least-squares to find fvh, fhv from the initial guess of foh and the two data arrays (o[n] and v[n])"
+    return fhv, fvh 
 
 
 
 def find_foh_coeff(count_begin, count_final, o_array):
 
     """
-    Finds the foh coefficient for the linear fly trap model.  The foh coefficient specifies
-    the fraction of flies which transition from "on the trap" to "in the trap, but hidden"
+    Finds the foh coefficient for the linear fly trap model.  The foh coefficient specifies 
+    the fraction of flies which transition from "on the trap" to "in the trap, but hidden" 
     during a given time step.
 
 
     Arguments:
 
-      count_begin  =  number of flies in trap at the start of the trial
-      count_final  =  number of flies in trap at the end of the trial
-      o_array      =  array of "on trap" counts giving number of flies on the trap at
-                      each time step
+      count_begin  =  number of flies in trap at the start of the trial 
+      count_final  =  number of flies in trap at the end of the trial 
+      o_array      =  array of "on trap" counts giving number of flies on the trap at 
+                      each time step 
     Returns:
 
-      foh          =  coefficient specifying the fraction of flies transistioning from
-                      "on trap" o[n] to "in trap hidden" h[n] during a given time step
+      foh          =  coefficient specifying the fraction of flies transistioning from 
+                      "on trap" o[n] to "in trap hidden" h[n] during a given time step 
 
     """
 
@@ -144,14 +144,14 @@ def find_a_array(foh, o_array):
 
     Arguments:
 
-      foh          =  coefficient specifying the fraction of flies transistioning from
-                      "on trap" o[n] to "in trap hidden" h[n] during a given time step
-      o_array      =  array of "on trap" counts giving number of flies on the trap at
-                      each time step
+      foh          =  coefficient specifying the fraction of flies transistioning from 
+                      "on trap" o[n] to "in trap hidden" h[n] during a given time step 
+      o_array      =  array of "on trap" counts giving number of flies on the trap at 
+                      each time step 
 
     Returns:
 
-      a_array      =  array of "on trap arrival" counts given number of flies arriving on
+      a_array      =  array of "on trap arrival" counts given number of flies arriving on 
                       the trap at each time step
 
     """
@@ -161,42 +161,42 @@ def find_a_array(foh, o_array):
 
 
 
-def run_fly_trap_submodel(foh, fhv, fvh, o_array, h_init=0.0, v_init=0.0):
+def run_fly_trap_submodel(foh, fhv, fvh, o_array, h_init=0.0, v_init=0.0): 
     """
-    Runs  the fly trap submodel simulation with the given transistion
+    Runs  the fly trap submodel simulation ith the given transistion
     coefficients (foh, fhv, fvh) and array of "on trap" fly counts (o_array)
     for each time step.  Note, in this submodel the o_array "on trap" fly
-    counts are considered as an input whereas in the ful model the a_array
-    "arrival" fly counts are consider to be an input.
+    counts are considered as an inumpyut whereas in the ful model the a_array
+    "arrival" fly counts are consider to be an inumpyut. 
 
-    The submodel is as follows:
+    The submodel is as follows: 
 
-    o_array[n+1] = o_array[n] - foh*o_array[n]
+    o_array[n+1] = o_array[n] - foh*o_array[n] 
     h_array[n+1] = h_array[n] - fhv*h_array[n] + fvh*v_array[n] + foh*o_array[n]
-    v_array[n+1] = v_array[n] + fhv*h_array[n] - fvh*v_array[n]
-
+    v_array[n+1] = v_array[n] + fhv*h_array[n] - fvh*v_array[n] 
+    
     where
-
-    o_array[n] = # flies on the trap at time step n (input)
+    
+    o_array[n] = # flies on the trap at time step n (inumpyut)
     h_array[n] = # flies in the trap, which are hidden, at time step n
-    v_array[n] = # flies in the trap, which are visible, at time step n
+    v_array[n] = # flies in the trap, which are visible, at time step n 
 
     Arguments:
 
       foh      =  coefficient specifying the fraction of flies transistioning
-                  from "on trap" o[n] to "in trap hidden" h[n] during a given
-                  time step
+                  from "on trap" o[n] to "in trap hidden" h[n] during a given 
+                  time step 
 
       fhv      =  coefficient specifying the fraction of flies transistioning
-                  from "in trap hidden" h[n] to "in trap visible" v[n] during
-                  a given time step
+                  from "in trap hidden" h[n] to "in trap visible" v[n] during 
+                  a given time step 
 
       fvh      =  coefficient specifying the fraction of flies transistioning
-                  from "on trap visible" o[n] to "in trap hidden" h[n] during
-                  a given time step
+                  from "on trap visible" o[n] to "in trap hidden" h[n] during 
+                  a given time step 
 
       o_array  =  array of "on trap" counts giving number of flies on the trap
-                  at each time step
+                  at each time step 
 
       h_init   =  (optional) initial count of flies in "on trap hidden" state
 
@@ -206,10 +206,10 @@ def run_fly_trap_submodel(foh, fhv, fvh, o_array, h_init=0.0, v_init=0.0):
     Returns:
 
       h_array  =  array of "in trap hidden" counts giving number of flies in
-                  the trap which are not visible at each time step
+                  the trap which are not visible at each time step 
 
       v_array  =  array of "in trap visible" counts giving number of flies in
-                  the trap which are visible  each time step
+                  the trap which are visible  each time step 
 
     """
     num_step = o_array.shape[0]
@@ -222,7 +222,7 @@ def run_fly_trap_submodel(foh, fhv, fvh, o_array, h_init=0.0, v_init=0.0):
         h_cur = h_array[i]
         v_cur = v_array[i]
         h_new = h_cur - fhv*h_cur + fvh*v_cur + foh*o_cur
-        v_new = v_cur + fhv*h_cur - fvh*v_cur
+        v_new = v_cur + fhv*h_cur - fvh*v_cur 
         h_array[i+1] = h_new
         v_array[i+1] = v_new
     return h_array, v_array
@@ -234,14 +234,14 @@ def create_fhv_fvh_cost_func(foh, o_array, v_array, h_init=0.0, v_init=0.0):
 
     Arguments:
 
-      foh      =  coefficient specifying the fraction of flies transistioning from
-                  "on trap" o[n] to "in trap hidden" h[n] during a given time step
+      foh      =  coefficient specifying the fraction of flies transistioning from 
+                  "on trap" o[n] to "in trap hidden" h[n] during a given time step 
 
-      o_array  =  array of "on trap" counts giving number of flies on the trap at
-                  each time step
+      o_array  =  array of "on trap" counts giving number of flies on the trap at 
+                  each time step 
 
-      v_array  =  array of "in trap visible" counts giving number of flies in the trap
-                  which are visible  each time step
+      v_array  =  array of "in trap visible" counts giving number of flies in the trap 
+                  which are visible  each time step 
 
       h_init   =  (optional) initial count of flies in "on trap hidden" state
 
@@ -249,8 +249,8 @@ def create_fhv_fvh_cost_func(foh, o_array, v_array, h_init=0.0, v_init=0.0):
 
     Returns:
 
-      cost_func = least squares cost function for finding the fhv and fvh coefficients.
-
+      cost_func = least squares cost function for finding the fhv and fvh coefficients.  
+    
     """
     n = v_array.shape[0]
     o_array_sum = numpy.zeros((n,))
@@ -258,8 +258,8 @@ def create_fhv_fvh_cost_func(foh, o_array, v_array, h_init=0.0, v_init=0.0):
     h_array =  h_init + v_init + foh*o_array_sum - v_array
     def cost_func(f_vec):
         fhv, fvh = f_vec
-        h_array_pred, v_array_pred = run_fly_trap_submodel(foh, fhv, fvh, o_array,
-                h_init=h_init,
+        h_array_pred, v_array_pred = run_fly_trap_submodel(foh, fhv, fvh, o_array, 
+                h_init=h_init, 
                 v_init=v_init
                 )
         sqr_err = (h_array - h_array_pred)**2 + (v_array - v_array_pred)**2
@@ -300,7 +300,7 @@ if __name__ == '__main__':
     a_array  = a_array + triangle_bump(t,peak_t0,peak_t1,peak_max)
 
 
-    o_array, h_array, v_array = run_fly_trap_model(foh, fhv, fvh, a_array)
+    o_array, h_array, v_array = run_fly_trap_model(foh, fhv, fvh, a_array) 
 
     a_array_w_noise = a_array + noise_level*numpy.random.randn(num_step)*a_array.max()
     o_array_w_noise = o_array + noise_level*numpy.random.randn(num_step)*o_array.max()
@@ -351,19 +351,19 @@ if __name__ == '__main__':
     init_state = numpy.zeros((trans_mat.shape[0],))
     init_state_cov = numpy.diag(numpy.ones((trans_mat.shape[0],)))
 
-    #kalman = pykalman.KalmanFilter(
-    #        transition_matrices = trans_mat,
-    #        observation_matrices = obser_mat,
-    #        transition_covariance = trans_cov,
-    #        observation_covariance = obser_cov,
-    #        initial_state_mean = init_state,
+    #kalman = pykalman.KalmanFilter( 
+    #        transition_matrices = trans_mat, 
+    #        observation_matrices = obser_mat, 
+    #        transition_covariance = trans_cov, 
+    #        observation_covariance = obser_cov, 
+    #        initial_state_mean = init_state, 
     #        initial_state_covariance = init_state_cov
     #        )
 
-    kalman = pykalman.KalmanFilter(
-            transition_matrices = trans_mat,
-            observation_matrices = obser_mat,
-            initial_state_mean = init_state,
+    kalman = pykalman.KalmanFilter( 
+            transition_matrices = trans_mat, 
+            observation_matrices = obser_mat, 
+            initial_state_mean = init_state, 
             initial_state_covariance = init_state_cov,
             observation_covariance = obser_cov,
             em_vars = ['transition_covariance'],
