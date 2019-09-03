@@ -4,13 +4,13 @@ import kalman_filter
 import param_estimation
 import os.path
 import numpy
+import time
 
 
 def fit_and_filter_from_dir(dirname, trap, method='em', smooth_param=150.0):
 
     # data_filename = '../examples/data/2019_05_08_experiment/all_traps_final_analysis_output.json'
     # info_filename = '../examples/data/2019_05_08_experiment/trap_counts.json'
-
     data_filename = os.path.join(dirname, 'all_traps_final_analysis_output.json')
     info_filename = os.path.join(dirname, 'trap_counts.json')
 
@@ -62,6 +62,7 @@ def fit_and_filter(o_array, v_array, count_final, method='em', smooth_param=150.
     """
 
     # Find model parameters using least squares
+    time.sleep(10)
     foh_est = param_estimation.find_foh_coeff(0, count_final, o_array)                            # Initial estimate (biased)                  <----------- ASK WILL
     fhv_est, fvh_est = param_estimation.find_fhv_fvh_coeff_using_fmin(foh_est, o_array, v_array)  # Refine estimate
 

@@ -133,7 +133,6 @@ def find_foh_coeff(count_begin, count_final, o_array):
                       "on trap" o[n] to "in trap hidden" h[n] during a given time step
 
     """
-
     foh = (count_final - count_begin)/float(o_array.sum())
     return foh
 
